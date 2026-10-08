@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260806-05-839f1a0","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Canva Sans":"YAFLd8sKbwc,2","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAHO2VMiyZo,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAEul-FRQw4,0","Georgia":"YAGzXkO0pEM,0","Helvetica Neue":"YAFcf6CtJfI,0","Impact":"YAFcfnjI7Vk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Libre Baskerville":"YACgEUFdPdA,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YADLjI9qxTA,0","Nunito":"YACgEX8C5Gg,0","Oleo Script":"YACgEQQ14jI,0","Phantom Sans":"YAHO2E8Pb88,0","Playfair Display":"YACgEYmuCJE,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YADWjpfPmdk,0","Raleway":"YACgEVg3xZg,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Ubuntu":"YACgERDU--Q,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YADlN8CFZ8Q,0","ui-sans-serif":"YACkoN-xg4g,0"}}');</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolio</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'DM Sans', sans-serif; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .nav-link.active { color: #3b82f6; }
+    .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+    .project-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Rover camera servo-relative control */
+    #rover-camera-pad {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+      overflow: hidden;
+      cursor: crosshair;
+      user-select: none;
+      background:
+        linear-gradient(rgba(59, 130, 246, 0.07), rgba(59, 130, 246, 0.07)),
+        #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 14px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    #rover-camera-pad:hover { border-color: rgba(96, 165, 250, 0.8); }
+
+    #rover-camera-pad.camera-locked {
+      cursor: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+      background:
+        linear-gradient(rgba(59, 130, 246, 0.11), rgba(59, 130, 246, 0.11)),
+        #0f172a;
+    }
+
+    #rover-camera-crosshair {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: left 0.04s linear, top 0.04s linear;
+    }
+
+    #rover-camera-crosshair::before,
+    #rover-camera-crosshair::after {
+      content: "";
+      position: absolute;
+      background: rgba(248, 250, 252, 0.82);
+      border-radius: 999px;
+    }
+
+    #rover-camera-crosshair::before {
+      left: 50%;
+      top: 0;
+      width: 2px;
+      height: 34px;
+      transform: translateX(-50%);
+    }
+
+    #rover-camera-crosshair::after {
+      left: 0;
+      top: 50%;
+      width: 34px;
+      height: 2px;
+      transform: translateY(-50%);
+    }
+
+    #rover-camera-center-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.55);
+      pointer-events: none;
+    }
+
+    .rover-camera-readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+  
+    /* Refined Control My Rover layout */
+    #page-rover [data-template-id="rover-main-placeholder"],
+    #page-rover #rover-main-live-feed {
+      width: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 640px) {
+      #page-rover [data-template-id="rover-main-placeholder"],
+      #page-rover #rover-main-live-feed {
+        height: 20rem !important;
+      }
+    }
+
+    /* Rover pre-login vs post-login layout */
+    #page-rover.rover-prelogin > div.max-w-6xl {
+      max-width: 72rem;
+    }
+
+    #page-rover.rover-prelogin #rover-layout-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    #page-rover.rover-prelogin #rover-hero-block {
+      max-width: none;
+      text-align: left;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    #page-rover.rover-prelogin [data-template-id="rover-heading"] {
+      text-align: left !important;
+      font-size: 36px;
+    }
+
+    #page-rover.rover-prelogin [data-template-id="rover-description"] {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 42rem;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      margin-top: 0;
+      align-self: center;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      max-width: none;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    #page-rover.rover-postlogin #rover-layout-shell {
+      display: block;
+    }
+
+    #page-rover.rover-postlogin #rover-hero-block {
+      max-width: 64rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-heading"] {
+      text-align: center !important;
+      font-size: clamp(3.25rem, 7vw, 5.5rem) !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-description"] {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 48rem;
+    }
+
+    #page-rover.rover-postlogin #rover-control-panel {
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-layout-shell {
+        grid-template-columns: 1fr;
+      }
+
+      #page-rover.rover-prelogin #rover-hero-block {
+        text-align: center;
+      }
+
+      #page-rover.rover-prelogin [data-template-id="rover-heading"] {
+        text-align: center !important;
+      }
+
+      #page-rover.rover-prelogin [data-template-id="rover-description"] {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    /* Final pre-login sizing/layout override */
+    #page-rover.rover-prelogin #rover-layout-shell {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px) !important;
+      gap: 3rem !important;
+      align-items: center !important;
+    }
+
+    #page-rover.rover-prelogin #rover-hero-block {
+      max-width: none !important;
+      margin: 0 !important;
+      text-align: left !important;
+    }
+
+    #page-rover.rover-prelogin [data-template-id="rover-heading"] {
+      font-size: 36px !important;
+      line-height: 1.15 !important;
+      text-align: left !important;
+    }
+
+    #page-rover.rover-prelogin [data-template-id="rover-description"] {
+      font-size: 16px !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    #page-rover.rover-prelogin [data-template-id="rover-main-placeholder"],
+    #page-rover.rover-prelogin #rover-main-live-feed {
+      height: 18rem !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      width: 100% !important;
+      object-fit: cover !important;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      margin-top: 0 !important;
+      padding: 2rem !important;
+      width: 100% !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      max-width: none !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-main-placeholder"],
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      height: 32rem !important;
+      width: 100% !important;
+      object-fit: cover !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-layout-shell {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-prelogin #rover-hero-block {
+        text-align: center !important;
+      }
+
+      #page-rover.rover-prelogin [data-template-id="rover-heading"] {
+        text-align: center !important;
+      }
+
+      #page-rover.rover-prelogin [data-template-id="rover-main-placeholder"],
+      #page-rover.rover-prelogin #rover-main-live-feed {
+        height: 18rem !important;
+      }
+    }
+
+    /* Match pre-login card height to rover image */
+    #page-rover.rover-prelogin #rover-control-panel {
+      min-height: 18rem !important;
+      height: 18rem !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      width: 100% !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel form {
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-control-panel {
+        height: auto !important;
+        min-height: 0 !important;
+      }
+    }
+
+    /* Pre-login: login card matches the full left column,
+       from Control My Rover heading through the bottom of the rover video. */
+    #page-rover.rover-prelogin #rover-layout-shell {
+      align-items: stretch !important;
+    }
+
+    #page-rover.rover-prelogin #rover-hero-block {
+      height: 100%;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      height: 100% !important;
+      min-height: 100% !important;
+      align-self: stretch !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      width: 100% !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-control-panel {
+        height: auto !important;
+        min-height: 0 !important;
+      }
+    }
+
+    /* Pre-login alignment: login begins at "Control My Rover", not "FIELD LAB". */
+    #page-rover.rover-prelogin #rover-control-panel {
+      /* FIELD LAB line + its bottom margin */
+      margin-top: 2.25rem !important;
+      height: calc(100% - 2.25rem) !important;
+      min-height: calc(100% - 2.25rem) !important;
+      align-self: start !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-control-panel {
+        margin-top: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
+    }
+
+    /* Compact post-login controls so rover feed stays visible in the same viewport */
+    #page-rover.rover-postlogin #rover-control-panel {
+      margin-top: 1rem !important;
+      padding: 1rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls .grid {
+      gap: 1rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      grid-template-columns: minmax(260px, 0.7fr) minmax(360px, 1fr) !important;
+      align-items: start !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div {
+      padding: 1rem !important;
+      height: auto !important;
+      min-height: 0 !important;
+    }
+
+    /* Navigation card hugs the key controls */
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      margin-bottom: 0.75rem !important;
+      font-size: 20px !important;
+    }
+
+    #page-rover.rover-postlogin [data-rover-move] {
+      padding-top: 0.65rem !important;
+      padding-bottom: 0.65rem !important;
+      font-size: 14px !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-forward"],
+    #page-rover.rover-postlogin [data-template-id="rover-left"],
+    #page-rover.rover-postlogin [data-template-id="rover-backward"],
+    #page-rover.rover-postlogin [data-template-id="rover-right"] {
+      min-height: 2.75rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      min-height: 190px !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 {
+      gap: 0.35rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 > div {
+      padding: 0.4rem 0.55rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .rover-camera-readout {
+      font-size: 0.95rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .text-\[11px\] {
+      font-size: 9px !important;
+    }
+
+    #page-rover.rover-postlogin h4.text-white {
+      font-size: 1.15rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      font-size: 0.85rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-api-state {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      font-size: 0.78rem !important;
+    }
+
+    /* Keep the rover feed large enough to remain the focal point */
+    #page-rover.rover-postlogin [data-template-id="rover-main-placeholder"],
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      height: 24rem !important;
+    }
+
+    @media (max-width: 1100px) {
+      #page-rover.rover-postlogin #rover-protected-controls > .grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-postlogin [data-template-id="rover-main-placeholder"],
+      #page-rover.rover-postlogin #rover-main-live-feed {
+        height: 20rem !important;
+      }
+    }
+
+    /* Square camera pad + tighter post-login interface */
+    #page-rover.rover-postlogin #rover-control-panel {
+      margin-top: 0.75rem !important;
+      padding: 0.75rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      grid-template-columns: minmax(230px, 0.72fr) minmax(300px, 0.9fr) !important;
+      gap: 0.75rem !important;
+      align-items: start !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div {
+      padding: 0.75rem !important;
+      border-radius: 0.85rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      margin-bottom: 0.5rem !important;
+      font-size: 18px !important;
+    }
+
+    #page-rover.rover-postlogin [data-rover-move] {
+      padding: 0.5rem 0.6rem !important;
+      font-size: 12px !important;
+      min-height: 2.25rem !important;
+      border-radius: 0.45rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      width: min(100%, 280px) !important;
+      aspect-ratio: 1 / 1 !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      border-radius: 0.75rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.top-4 {
+      left: 0.65rem !important;
+      top: 0.55rem !important;
+      font-size: 9px !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 {
+      left: 0.55rem !important;
+      right: 0.55rem !important;
+      bottom: 0.55rem !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.3rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 > div {
+      padding: 0.3rem 0.4rem !important;
+      border-radius: 0.45rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .rover-camera-readout {
+      font-size: 0.82rem !important;
+      line-height: 1.05 !important;
+    }
+
+    #page-rover.rover-postlogin h4.text-white {
+      font-size: 1rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-state {
+      font-size: 9px !important;
+      padding: 0.2rem 0.45rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center,
+    #page-rover.rover-postlogin #rover-camera-api-state {
+      min-height: 2rem !important;
+      padding: 0.35rem 0.45rem !important;
+      font-size: 0.72rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      height: 20rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-heading"] {
+      font-size: clamp(2.5rem, 5vw, 4rem) !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-description"] {
+      margin-bottom: 0.75rem !important;
+      font-size: 0.9rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-kicker"] {
+      margin-bottom: 0.35rem !important;
+    }
+
+    @media (max-width: 1000px) {
+      #page-rover.rover-postlogin #rover-protected-controls > .grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-postlogin #rover-camera-pad {
+        width: min(100%, 250px) !important;
+      }
+
+      #page-rover.rover-postlogin #rover-main-placeholder,
+      #page-rover.rover-postlogin #rover-main-live-feed {
+        height: 18rem !important;
+      }
+    }
+
+    /* Balance keyboard + camera controls and keep both in-frame */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) !important;
+      gap: 0.6rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div {
+      padding: 0.65rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      width: 9.5rem !important;
+      max-width: 100% !important;
+      aspect-ratio: 1 / 1 !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0.4rem auto 0 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 {
+      left: 0.35rem !important;
+      right: 0.35rem !important;
+      bottom: 0.35rem !important;
+      gap: 0.2rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 > div {
+      padding: 0.18rem 0.25rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .rover-camera-readout {
+      font-size: 0.68rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center,
+    #page-rover.rover-postlogin #rover-camera-api-state {
+      min-height: 1.8rem !important;
+      padding: 0.25rem 0.35rem !important;
+      font-size: 0.65rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      height: 18rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-control-panel {
+      margin-top: 0.5rem !important;
+      padding: 0.6rem !important;
+    }
+
+    @media (max-width: 1000px) {
+      #page-rover.rover-postlogin #rover-camera-pad {
+        width: 9rem !important;
+      }
+    }
+
+    /* Final camera/keyboard visual match */
+    #page-rover.rover-postlogin #rover-camera-pad {
+      width: 8.75rem !important;
+      aspect-ratio: 1 / 1 !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0.25rem auto 0 !important;
+    }
+
+    #page-rover.rover-postlogin h4.text-white {
+      font-size: 0.9rem !important;
+      line-height: 1.1 !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-state {
+      font-size: 8px !important;
+      padding: 0.15rem 0.35rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 {
+      left: 0.25rem !important;
+      right: 0.25rem !important;
+      bottom: 0.25rem !important;
+      gap: 0.15rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 > div {
+      padding: 0.14rem 0.2rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .rover-camera-readout {
+      font-size: 0.62rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center,
+    #page-rover.rover-postlogin #rover-camera-api-state {
+      min-height: 1.65rem !important;
+      padding: 0.2rem 0.3rem !important;
+      font-size: 0.6rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div {
+      padding: 0.55rem !important;
+    }
+
+    /* Pair Center Camera with the square camera control */
+    #page-rover.rover-postlogin #rover-camera-center {
+      width: 8.75rem !important;
+      min-height: 2.4rem !important;
+      padding: 0.35rem 0.5rem !important;
+      font-size: 0.72rem !important;
+      border-radius: 0.65rem !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad + .mt-2 {
+      width: 8.75rem;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    /* Seamless camera control card */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      padding: 0.5rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) > .mb-8 {
+      width: 8.75rem !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) .flex.items-center.justify-between {
+      width: 100% !important;
+      margin-bottom: 0.35rem !important;
+      gap: 0.35rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) h4 {
+      font-size: 0.78rem !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-state {
+      font-size: 7px !important;
+      padding: 0.12rem 0.28rem !important;
+      line-height: 1 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      width: 8.75rem !important;
+      margin: 0 !important;
+      border-radius: 0.7rem 0.7rem 0.45rem 0.45rem !important;
+      border-bottom-left-radius: 0.45rem !important;
+      border-bottom-right-radius: 0.45rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad + .mt-2 {
+      width: 8.75rem !important;
+      margin: 0.3rem 0 0 !important;
+      display: block !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center {
+      width: 8.75rem !important;
+      min-height: 2rem !important;
+      border-radius: 0.45rem 0.45rem 0.7rem 0.7rem !important;
+      padding: 0.25rem 0.4rem !important;
+      font-size: 0.66rem !important;
+    }
+
+    /* Center the combined rover feed + controls in the viewport after login */
+    #page-rover.rover-postlogin #rover-postlogin-view {
+      padding-top: 1rem !important;
+      padding-bottom: 1rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-control-panel {
+      margin-top: 0.35rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-main-placeholder"],
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      height: 17rem !important;
+    }
+
+    /* Post-login: hide rover intro copy and match control headings */
+    #page-rover.rover-postlogin [data-template-id="rover-kicker"],
+    #page-rover.rover-postlogin [data-template-id="rover-heading"],
+    #page-rover.rover-postlogin [data-template-id="rover-description"] {
+      display: none !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      font-size: 0.9rem !important;
+      line-height: 1.1 !important;
+      margin-bottom: 0.5rem !important;
+      text-align: center !important;
+    }
+
+    #page-rover.rover-postlogin h4.text-white {
+      font-size: 0.9rem !important;
+      line-height: 1.1 !important;
+    }
+
+    /* Post-login square, uncropped rover feed */
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: min(100%, 32rem) !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      object-fit: contain !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      display: block;
+    }
+
+    /* Make Navigation Controls match the Camera Mouse Control footprint */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      justify-items: center !important;
+      align-items: start !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child,
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) {
+      width: 10rem !important;
+      min-width: 10rem !important;
+      max-width: 10rem !important;
+      box-sizing: border-box !important;
+      padding: 0.5rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .grid.grid-cols-3 {
+      width: 8.75rem !important;
+      max-width: 8.75rem !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      width: 100% !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+    }
+
+    @media (max-width: 700px) {
+      #page-rover.rover-postlogin #rover-protected-controls > .grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-postlogin #rover-main-placeholder,
+      #page-rover.rover-postlogin #rover-main-live-feed {
+        width: min(100%, 24rem) !important;
+      }
+    }
+
+    /* Restore the rover feed's original wide proportions, just larger */
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: min(100%, 52rem) !important;
+      height: 25rem !important;
+      aspect-ratio: auto !important;
+      object-fit: cover !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      display: block !important;
+    }
+
+    /* Wide, balanced Navigation + Camera cards */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 1rem !important;
+      align-items: stretch !important;
+      justify-items: stretch !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child,
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      min-height: 12.5rem !important;
+      padding: 0.75rem !important;
+      box-sizing: border-box !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+    }
+
+    /* Keep keyboard controls compact inside the wider outer card */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .grid.grid-cols-3 {
+      width: 9.5rem !important;
+      max-width: 9.5rem !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    /* Let the camera unit sit cleanly inside its wider matching card */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) > .mb-8 {
+      width: 9.5rem !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad,
+    #page-rover.rover-postlogin #rover-camera-pad + .mt-2,
+    #page-rover.rover-postlogin #rover-camera-center {
+      width: 9.5rem !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-protected-controls > .grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-postlogin #rover-main-placeholder,
+      #page-rover.rover-postlogin #rover-main-live-feed {
+        width: 100% !important;
+        height: 20rem !important;
+      }
+    }
+
+    /* Scale inner controls to fill the matching outer cards */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child,
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) {
+      min-height: 14.5rem !important;
+      padding: 1rem !important;
+    }
+
+    /* Navigation controls fill */
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      font-size: 1rem !important;
+      margin-bottom: 0.8rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .grid.grid-cols-3 {
+      width: 13rem !important;
+      max-width: 13rem !important;
+      gap: 0.6rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-rover-move] {
+      min-height: 3.25rem !important;
+      padding: 0.7rem 0.8rem !important;
+      font-size: 0.9rem !important;
+      border-radius: 0.6rem !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-stop"] {
+      min-width: 4.5rem !important;
+    }
+
+    /* Camera controls fill */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) > .mb-8 {
+      width: 13rem !important;
+      margin: 0 auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      width: 13rem !important;
+      aspect-ratio: 1 / 1 !important;
+      margin: 0 auto !important;
+    }
+
+    #page-rover.rover-postlogin h4.text-white {
+      font-size: 1rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-state {
+      font-size: 0.65rem !important;
+      padding: 0.2rem 0.4rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 {
+      left: 0.45rem !important;
+      right: 0.45rem !important;
+      bottom: 0.45rem !important;
+      gap: 0.3rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .absolute.left-4.right-4.bottom-4 > div {
+      padding: 0.3rem 0.4rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad .rover-camera-readout {
+      font-size: 0.8rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad + .mt-2,
+    #page-rover.rover-postlogin #rover-camera-center {
+      width: 13rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center {
+      min-height: 2.5rem !important;
+      font-size: 0.8rem !important;
+      padding: 0.4rem 0.6rem !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .grid.grid-cols-3,
+      #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) > .mb-8,
+      #page-rover.rover-postlogin #rover-camera-pad,
+      #page-rover.rover-postlogin #rover-camera-pad + .mt-2,
+      #page-rover.rover-postlogin #rover-camera-center {
+        width: 11rem !important;
+        max-width: 11rem !important;
+      }
+    }
+
+    /* Full square rover feed without cropping */
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: min(100%, 34rem) !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      object-fit: contain !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      display: block !important;
+      background: #000 !important;
+    }
+
+    /* Center Navigation Controls content inside its outer card */
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+
+    #page-rover.rover-postlogin [data-template-id="rover-controls-heading"] {
+      width: 100% !important;
+      text-align: center !important;
+      margin-bottom: 0.9rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .flex.flex-wrap.items-center.justify-center {
+      width: 100% !important;
+      justify-content: center !important;
+      align-items: center !important;
+      margin: auto 0 !important;
+      gap: 0.75rem !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child .grid.grid-cols-3 {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    /* Post-login rover placeholder/live feed:
+       square and the full width of the rover content area */
+    #page-rover.rover-postlogin #rover-main-placeholder,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: 100% !important;
+      max-width: none !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      object-fit: contain !important;
+      margin: 0 auto !important;
+      display: block !important;
+      background: #000 !important;
+    }
+
+    /* Keep placeholder and final rover footage in exactly the same frame */
+    #page-rover.rover-postlogin #rover-hero-block > .relative {
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* New baseline behavior: keep rover video, show matched live feed beneath it after login */
+    #page-rover.rover-prelogin #rover-feed-under-video {
+      display: none !important;
+    }
+
+    #page-rover.rover-postlogin #rover-feed-under-video {
+      display: block !important;
+      margin-top: 1rem !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      display: block !important;
+      object-fit: cover !important;
+      border-radius: 1rem !important;
+    }
+
+    /* Post-login only: hide decorative rover video and overlay controls on live feed */
+    #page-rover.rover-postlogin [data-template-id="rover-main-placeholder"] {
+      display: none !important;
+    }
+
+    #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+      position: relative !important;
+      width: 100% !important;
+    }
+
+    #page-rover.rover-postlogin #rover-feed-under-video {
+      position: relative !important;
+      z-index: 1 !important;
+      display: block !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-postlogin #rover-control-panel {
+      position: absolute !important;
+      left: 50% !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: 0.75rem !important;
+      transform: translateX(-50%) !important;
+      width: calc(100% - 1.5rem) !important;
+      max-width: 60rem !important;
+      margin: 0 !important;
+      padding: 0.5rem !important;
+      z-index: 10 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      pointer-events: none !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls {
+      pointer-events: auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid {
+      gap: 0.75rem !important;
+      align-items: end !important;
+    }
+
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:first-child,
+    #page-rover.rover-postlogin #rover-protected-controls > .grid > div:nth-child(2) {
+      background: rgba(15, 23, 42, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22) !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-pad {
+      background:
+        linear-gradient(rgba(15, 23, 42, 0.34), rgba(15, 23, 42, 0.34)) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+    }
+
+    #page-rover.rover-postlogin #rover-camera-center {
+      background: rgba(15, 23, 42, 0.6) !important;
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+    }
+
+    /* Restore pressed-state feedback */
+    #page-rover.rover-postlogin [data-rover-move] {
+      opacity: 0.5 !important;
+      transition: opacity 0.12s ease, transform 0.08s ease !important;
+    }
+
+    #page-rover.rover-postlogin [data-rover-move]:active {
+      opacity: 1 !important;
+      transform: scale(0.97) !important;
+    }
+
+    @media (hover: hover) {
+      #page-rover.rover-postlogin [data-rover-move]:hover {
+        opacity: 0.8 !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-control-panel {
+        position: static !important;
+        left: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin-top: 0.75rem !important;
+      }
+    }
+
+    /* Definitive pre-login two-column layout */
+    #page-rover.rover-prelogin #rover-layout-shell {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px) !important;
+      gap: 3rem !important;
+      align-items: start !important;
+    }
+
+    #page-rover.rover-prelogin #rover-hero-block {
+      grid-column: 1 !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      grid-column: 2 !important;
+      position: static !important;
+      transform: none !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 2.25rem 0 0 0 !important;
+      align-self: stretch !important;
+      height: auto !important;
+      min-height: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgb(30, 41, 59) !important;
+      pointer-events: auto !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    #page-rover.rover-prelogin #rover-protected-controls {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-layout-shell {
+        grid-template-columns: 1fr !important;
+      }
+
+      #page-rover.rover-prelogin #rover-control-panel {
+        grid-column: 1 !important;
+        margin-top: 0 !important;
+      }
+    }
+
+    /* Keyboard press visual state for rover controls */
+    #page-rover.rover-postlogin [data-rover-move].key-active {
+      opacity: 1 !important;
+      transform: scale(0.97) !important;
+    }
+
+    /* Scale the post-login rover feed to 85% of its current footprint */
+    #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+      width: 85% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-feed-under-video,
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    /* Remove the empty remnant left by the deleted duplicate login form */
+    #page-rover.rover-prelogin #rover-feed-overlay-wrap:empty,
+    #page-rover.rover-prelogin #rover-feed-under-video:empty {
+      display: none !important;
+    }
+
+    /* Prevent any empty duplicate card/shell from showing below the rover video */
+    #page-rover.rover-prelogin #rover-hero-block > div:empty {
+      display: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: 0 !important;
+      min-height: 0 !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+        width: 95% !important;
+      }
+    }
+
+    /* Rover camera feed: 75% of the previous 85%-sized feed */
+    #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+      width: 63.75% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+        width: 75% !important;
+      }
+    }
+
+    /* Rover feed: 25% smaller in both width and height */
+    #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+      width: 47.8125% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    #page-rover.rover-postlogin #rover-main-live-feed {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-postlogin #rover-feed-overlay-wrap {
+        width: 56.25% !important;
+      }
+    }
+
+    /* About Me: make portrait column match the text column height */
+    #page-about .grid.md\:grid-cols-2 {
+      align-items: stretch !important;
+    }
+
+    #page-about .grid.md\:grid-cols-2 > div:first-child {
+      height: 100% !important;
+      display: flex !important;
+    }
+
+    #page-about .grid.md\:grid-cols-2 > div:first-child > img {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      object-fit: cover !important;
+      flex: 1 1 auto !important;
+    }
+
+    @media (max-width: 767px) {
+      #page-about .grid.md\:grid-cols-2 > div:first-child > img {
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+      }
+    }
+
+    /* Final pre-login cleanup: compact login card and remove empty feed remnants */
+    #page-rover.rover-prelogin #rover-layout-shell {
+      align-items: start !important;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      align-self: start !important;
+      height: auto !important;
+      min-height: 0 !important;
+      padding: 1.25rem !important;
+      display: block !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-prelogin #rover-login-panel form {
+      margin: 0 !important;
+    }
+
+    #page-rover.rover-prelogin #rover-feed-overlay-wrap,
+    #page-rover.rover-prelogin #rover-feed-under-video {
+      display: none !important;
+      height: 0 !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Pre-login: align the bottom of the login card with the rover media column */
+    #page-rover.rover-prelogin #rover-layout-shell {
+      align-items: stretch !important;
+    }
+
+    #page-rover.rover-prelogin #rover-hero-block {
+      height: 100% !important;
+    }
+
+    #page-rover.rover-prelogin #rover-control-panel {
+      align-self: stretch !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin-top: 2.25rem !important;
+      margin-bottom: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 900px) {
+      #page-rover.rover-prelogin #rover-control-panel {
+        align-self: auto !important;
+        margin-top: 0 !important;
+      }
+    }
+
+</style>
+<link href="assets/images/image-01-c95c82d007.png" rel="icon" type="image/png"/>
+&lt;!-- Custom portfolio images are embedded as data URIs so they travel with this HTML file. --&gt;
+</head>
+<body class="w-full min-h-screen" data-template-id="__page-root" style="background: rgb(15, 23, 42);">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#0f172a]/95 backdrop-blur-sm border-b border-white/10">
+<div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"><a class="canva-text text-white text-sm tracking-wide cursor-pointer" data-template-id="nav-logo" href="#home" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 20px;">Portfolio</a>
+<div class="flex gap-5 flex-wrap"><a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#home">Home</a> <a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#work">Projects</a> <a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#about">About</a> <a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#experience">Experience</a><a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#skills">Skills</a> <a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#rover">Rover</a> <a class="nav-link text-white/70 hover:text-white text-sm transition-colors" href="#contact">Contact</a>
+</div>
+</div>
+</nav>
+<main class="pt-16"><!-- HOME -->
+<section class="page active fade-in" id="page-home"><div class="max-w-6xl mx-auto px-6 py-16 min-h-[calc(90vh-4rem)] flex items-center"><div class="max-w-3xl"><p class="inline-flex items-center rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-blue-300 mb-6">Hello, I'm</p><h1 class="leading-none"><span class="block text-6xl sm:text-7xl md:text-8xl font-bold tracking-tight" style="background: linear-gradient(90deg, #ffffff 0%, #bfdbfe 58%, #3b82f6 100%);-webkit-background-clip: text; background-clip: text; color: transparent;">Liam</span><span class="block mt-5 text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight text-slate-200">Future Aerospace Engineer</span></h1><p class="mt-7 max-w-2xl text-base sm:text-lg leading-relaxed text-slate-300">Looking for an internship where I can expand my engineering skills and contribute to meaningful projects. My experience includes rovers, 3D-printed devices, high-altitude balloons, CubeSat electronics, payloads, and satellites currently in orbit.</p><div class="mt-9 flex flex-col items-start gap-4"><div class="flex flex-wrap items-center gap-4"><a class="inline-flex h-12 items-center justify-center rounded-full bg-blue-500 px-8 font-semibold text-white transition hover:bg-blue-400" data-template-id="home-cta" href="#rover">Control My Rover</a><a class="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-slate-800 px-8 font-semibold text-white transition hover:border-blue-400/40 hover:bg-slate-700" download="Liam_Tice_Resume.pdf" href="Liam_Tice_Resume.pdf"><i data-lucide="download" style="width:18px;height:18px"></i>Download Résumé</a></div><a class="inline-flex h-12 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/10 px-8 font-semibold text-blue-200 transition hover:border-blue-300/60 hover:bg-blue-500/20" data-template-id="home-cta" href="#work">View my Projects</a></div></div></div></section><!-- WORK -->
+<section class="page fade-in" id="page-work">
+<div class="max-w-6xl mx-auto px-6 py-10" id="rover-postlogin-view">
+<h2 class="canva-text mb-4" data-template-id="work-heading" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 36px;">Projects</h2>
+<p class="canva-text mb-12 max-w-xl" data-template-id="work-subtitle" style="color: rgba(255, 255, 255, 0.6); font-weight: 400; font-style: normal; font-size: 16px;"></p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<a aria-label="Open project 1" class="project-card block rounded-2xl overflow-hidden bg-white shadow-md cursor-pointer" href="#project1">
+<div class="w-full h-56 bg-black flex items-center justify-center overflow-hidden"><img alt="Animated rover" class="block mx-auto w-[198px] h-[200px] max-w-full object-contain" data-template-id="project-1-image" decoding="async" loading="lazy" src="assets/images/image-02-d4c4bcf299.gif" style="image-rendering: pixelated;image-rendering: crisp-edges;"/></div>
+<div class="p-6">
+<h3 class="canva-text font-bold" data-template-id="project-1-title" style="color: rgb(26, 26, 26); font-weight: 700; font-style: normal; font-size: 18px;">Rover Project</h3>
+<p class="canva-text mt-2" data-template-id="project-1-desc" style="color: rgb(85, 85, 85); font-weight: 400; font-style: normal; font-size: 18px;">A study on Rover terrain traversal using a custom built Modular Rover</p>
+</div>
+</a>
+<a aria-label="Open project 2" class="project-card block rounded-2xl overflow-hidden bg-white shadow-md cursor-pointer" href="#project2">
+<img alt="Animated satellite CAD model" class="w-full h-full object-contain bg-black rounded-xl" decoding="async" draggable="false" loading="lazy" oncontextmenu="return false;" src="assets/images/image-03-d48da88f45.webp" style="user-select:none; -webkit-user-select:none; pointer-events:none;"/>
+<div class="p-6">
+<h3 class="canva-text font-bold" data-template-id="project-2-title" style="color: rgb(26, 26, 26); font-weight: 700; font-style: normal; font-size: 18px;">Jackals 1 and 2</h3>
+<p class="canva-text mt-2" data-template-id="project-2-desc" style="color: rgb(85, 85, 85); font-weight: 400; font-style: normal; font-size: 14px;"></p>
+</div>
+</a>
+<a aria-label="Open project 3" class="project-card block rounded-2xl overflow-hidden bg-white shadow-md cursor-pointer" href="#project3">
+<img alt="Animated drone CAD model" class="w-full h-full object-contain rounded-xl" data-template-id="project-3-image" decoding="async" draggable="false" loading="lazy" oncontextmenu="return false;" src="assets/images/image-04-fabf0e687e.webp" style="background-color: #1B1D1A;   -webkit-; user-select:none; -webkit-user-select:none; pointer-events:none;"/>
+<div class="p-6">
+<h3 class="canva-text font-bold" data-template-id="project-3-title" style="color: rgb(26, 26, 26); font-weight: 700; font-style: normal; font-size: 18px;">Gallery Exhibition</h3>
+<p class="canva-text mt-2" data-template-id="project-3-desc" style="color: rgb(85, 85, 85); font-weight: 400; font-style: normal; font-size: 14px;">Photography curation and exhibition design</p>
+</div>
+</a>
+<a aria-label="Open High Altitude Balloon project" class="project-card block relative rounded-2xl overflow-hidden bg-slate-950 shadow-md cursor-pointer min-h-72 isolate" href="#project4">
+<img alt="High altitude balloon launch" class="canva-image absolute inset-0 w-full h-full object-cover" data-template-id="project-4-image" decoding="async" loading="lazy" src="assets/images/image-05-8b9fbe83c8.png"/>
+</a>
+</div>
+</div>
+</section><!-- PROJECT DETAILS -->
+<section class="page fade-in" id="page-project1">
+<div class="max-w-5xl mx-auto px-6 py-16">
+<a class="inline-flex text-[#3b82f6] hover:text-blue-300 mb-8" href="#work">← Back to Projects</a>
+<img alt="Rover on a Mars-inspired red landscape under a dark sky" class="w-full h-auto object-contain rounded-2xl mb-10" decoding="async" loading="lazy" src="assets/images/image-06-8c7a96221b.png" style="width:100%;height:auto;object-fit:contain;display:block;"/>
+<p class="text-[#3b82f6] uppercase tracking-widest text-sm mb-3">Mk. Rover V2</p>
+<h2 class="text-white font-bold text-4xl mb-6">Personal Rover Project</h2>
+<p class="text-white/75 leading-relaxed mb-8">Mk. Rover V2 is the next iteration of my personal rover platform, building on a functional V1 prototype with improved mechanical design, power management, and autonomous operating capabilities. The project focuses on making the rover more reliable, easier to test, and better suited for extended missions.</p><h3 class="text-xl font-semibold text-white mt-8 mb-3">V1 Platform</h3><p class="text-white/75 leading-relaxed mb-6">The original rover established the core systems needed for remote operation. It uses LiPo batteries, a motor drive system controlled through a terminal, and an adjustable voltage regulator to supply the Raspberry Pi. The Pi powers the sensors and supporting electronics, while the motors draw power from the battery system. V1 supports driving, camera access, magnetometer and accelerometer readings, and a custom user interface that connects to the rover through a MongoDB-based workflow. It can also continuously livestream camera footage to YouTube over Wi-Fi, making remote testing and troubleshooting more accessible.</p><h3 class="text-xl font-semibold text-white mt-8 mb-3">V2 Development</h3><p class="text-white/75 leading-relaxed mb-6">The V2 redesign will introduce a revised chassis, updated LiPo battery configuration, improved software, and a solar-assisted power management system. My plan is to integrate an existing LiPo charging circuit with a new control board rather than develop a battery charging circuit from scratch. The board will monitor solar panel power and battery level, then communicate those measurements to the Raspberry Pi over serial. An Arduino will manage when the Pi powers on and off according to mission requirements, default settings, or user-defined intervals. I also plan to replace the manually adjustable regulator with a fixed-output, waterproof automotive DC converter rated for 5 V at 3 A, pending verification that it is compatible with the rover’s actual input voltage and load requirements.</p><h3 class="text-xl font-semibold text-white mt-8 mb-3">Current Progress and Next Steps</h3><p class="text-white/75 leading-relaxed mb-6">I have begun ordering the parts for the redesigned chassis and identifying fitment issues before assembly. The first fasteners were undersized, so I am checking the mounting-hole dimensions before ordering replacements. I also discovered that the anodized aluminum panels were too large for the new frame. I plan to order correctly sized panels and use the original pieces as drilling and alignment test material. Once the chassis hardware is finalized, the next phase will focus on mechanical assembly, electrical integration, power-system validation, and software updates for V2.</p>
+<div class="grid md:grid-cols-3 gap-6"></div>
+</div>
+</section>
+<section class="page fade-in" id="page-project2">
+<div class="max-w-5xl mx-auto px-6 py-16">
+<a class="inline-flex text-[#3b82f6] hover:text-blue-300 mb-8" href="#work">← Back to Projects</a>
+<img alt="Meridian Web Platform project" class="w-full h-80 md:h-[460px] object-cover rounded-2xl mb-10" decoding="async" loading="lazy" src="assets/images/image-07-fb5ff818a2.png"/>
+<p class="text-[#3b82f6] uppercase tracking-widest text-sm mb-3">First Aerospace Engineering Internship</p>
+<h2 class="text-white font-bold text-4xl mb-6">Jackals 1 &amp; 2</h2>
+<p class="text-white/75 leading-relaxed mb-8" style="white-space: pre-line;">Aided in enabling Jackal’s ability to collect multi-spectral imagery, full-motion
+video, and metric observation data of any resident space object in any orbit
+using Earth-collected data sourced from telescopic observations</p><p class="text-white/75 leading-relaxed mb-8" style="white-space: pre-line;">Assisted in creation of sensor test hardware
+Presented and changed designs based off of PDR
+Helped with fixing algorithms meant to enhance visual detection</p><p class="text-white/75 leading-relaxed mb-8" style="white-space: pre-line;">Python Software 
+Wrote scripts to analyze and compare large datasets and made physics tools</p><p class="text-white/75 leading-relaxed mb-8" style="white-space: pre-line;">Electrical Harness testing
+Professional leadership Experience</p>
+<div class="grid md:grid-cols-3 gap-6"></div>
+</div>
+</section>
+<section class="page fade-in" id="page-project3">
+<div class="max-w-5xl mx-auto px-6 py-16">
+<a class="inline-flex text-[#3b82f6] hover:text-blue-300 mb-8" href="#work">← Back to Projects</a>
+<img alt="Animated drone CAD model" class="w-full h-80 md:h-[460px] object-contain rounded-2xl mb-10" decoding="async" draggable="false" loading="lazy" oncontextmenu="return false;" src="assets/images/image-04-fabf0e687e.webp" style="background-color: #1B1D1A;   -webkit-; user-select:none; -webkit-user-select:none; pointer-events:none;"/>
+<p class="text-[#3b82f6] uppercase tracking-widest text-sm mb-3">Micro Drone</p>
+<h2 class="text-white font-bold text-4xl mb-6">Micro Drone</h2>
+<p class="text-white/75 leading-relaxed mb-8">An ESP32 based project meant for developing effective PID Controllers and fast paced GPIO Commands</p>
+<div class="grid md:grid-cols-3 gap-6"><div class="bg-slate-800 rounded-xl p-6"><h3 class="text-white font-bold mb-2">Goal</h3><p class="text-white/60 text-sm">Fully functional micro drone with camera and sensor suite</p></div><div class="bg-slate-800 rounded-xl p-6"><h3 class="text-white font-bold mb-2">Process</h3><p class="text-white/60 text-sm">Currently in PCB Development, Will be ordering the first prototype board next month</p></div><div class="bg-slate-800 rounded-xl p-6"><h3 class="text-white font-bold mb-2">Next Steps</h3><p class="text-white/60 text-sm">Finalize prototype board, test hardware, Upload first Code version</p></div></div>
+</div>
+</section>
+<section class="page fade-in" id="page-project4">
+<div class="max-w-5xl mx-auto px-6 py-16">
+<a class="inline-flex text-[#3b82f6] hover:text-blue-300 mb-8" href="#work">← Back to Projects</a>
+<img alt="HAB 4 Launch" class="block w-full h-auto max-w-full rounded-2xl mb-10" decoding="async" loading="lazy" src="assets/images/image-08-dcf105f737.png" style="width:100%;height:auto;object-fit:contain;"/>
+<p class="text-[#3b82f6] uppercase tracking-widest text-sm mb-3">High altitude balloon launch and development</p>
+<h2 class="text-white font-bold text-4xl mb-6">HAB 4 Launch</h2>
+<p class="text-white/75 leading-relaxed mb-6">The goal was to send Robinson Aerospace’s RasCube education payload to an altitude of 20km, an Australian company based in Adelaide. Their Hardware has never been sent over 1km and we were the first to send this new platform up a high altitude balloon (HAB).</p><p class="text-white/75 leading-relaxed mb-6">Compared to our previous launches, our collected data was significantly more accurate, detailed, and informative than what we had ever collected in the past; this data was more accurate with the help of Robinson Aerospace's better sensors.</p><p class="text-white/75 leading-relaxed mb-6">Using the data collected during this launch we will be working to develop a single board recovery system that will house our sensor suite, gps, and radio antenna. This will allow us to launch further missions with ease and without fear of losing HAB’s and payloads. This will allow us to speed up further HAB Developments</p>
+<div class="grid md:grid-cols-3 gap-6"></div>
+</div>
+</section>
+<!-- ABOUT -->
+<section class="page fade-in" id="page-about">
+<div class="max-w-6xl mx-auto px-6 py-16">
+<div class="mb-12">
+<p class="text-[#3b82f6] uppercase tracking-[0.25em] text-sm font-semibold mb-3">About</p>
+<h2 class="text-white font-bold text-4xl">About Me</h2>
+<p class="text-white/60 mt-3 max-w-2xl">Engineering, aerospace, robotics, teaching, and the projects that drive my curiosity.</p>
+</div>
+<!-- GENERAL ABOUT ME -->
+<section class="rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 mb-8">
+<div class="grid lg:grid-cols-2 gap-8 items-center">
+<img alt="About me portrait" class="w-full min-h-[360px] h-full rounded-2xl border border-white/10 object-cover" decoding="async" loading="lazy" src="assets/images/image-09-70dbee7c33.jpg" style="object-position:center;"/>
+<div>
+<p class="text-blue-400 uppercase tracking-[0.25em] text-sm font-semibold mb-2">Personal Background</p>
+<h3 class="text-3xl font-bold text-white mb-4">About Me</h3>
+<p class="text-white/70 leading-relaxed">I am an engineering student at Colorado State University interested in aerospace, robotics, and practical problem solving. I enjoy combining mechanical design, electronics, and software to turn ideas into working systems.</p><p class="text-white/70 leading-relaxed mt-4">My projects include rovers, micro drones, CubeSat electronics, and high altitude balloons with Open Orbit. At True Anomaly, I contributed to early Jackal development through Python analysis, sensor testing, and engineering reviews.</p><p class="text-white/70 leading-relaxed mt-4 mt-4">At CSU, I have developed lab equipment, created Mechatronics electronics tutorials, and improved learning spaces. Outside engineering, I enjoy boxing and teaching others. I am driven by curiosity, practical challenges, and building things people can use.</p>
+</div>
+</div>
+</section>
+<!-- TRUE ANOMALY -->
+<section class="rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 mb-8">
+<img alt="True Anomaly intern team" class="w-full rounded-2xl border border-white/10 object-cover mb-7" decoding="async" loading="lazy" src="assets/images/image-10-b983a03fef.png" style="max-height:720px; object-position:center;"/>
+<p class="text-blue-400 uppercase tracking-[0.25em] text-sm font-semibold mb-2">Internship Experience</p>
+<h3 class="text-3xl font-bold text-white mb-4">True Anomaly Intern</h3>
+<p class="text-white/70 leading-relaxed max-w-4xl">
+      Part of the original four interns team at True Anomaly, contributing to the early development of Jackal.
+       Worked on Python analysis tools, sensor test hardware, electronics, design reviews, and systems engineering 
+       while collaborating with aerospace engineers. 
+    </p>
+</section>
+<!-- OPEN ORBIT -->
+<section class="rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 mb-8">
+<img alt="Open Orbit CubeSat Team" class="w-full rounded-2xl border border-white/10 object-cover mb-7" decoding="async" loading="lazy" src="assets/images/image-11-1c8be4794c.png" style="max-height:720px; object-position:center;"/>
+<p class="text-blue-400 uppercase tracking-[0.25em] text-sm font-semibold mb-2">CubeSat &amp; Balloon Team</p>
+<h3 class="text-3xl font-bold text-white mb-4">Open Orbit</h3>
+<p class="text-white/70 leading-relaxed max-w-4xl">
+      As part of Open Orbit, I have worked on CubeSat electronics, payload development, high-altitude balloons, and modular prototype systems. 
+      My work has included electrical development as well as helping lead newer members as they build and test incoming balloon and payload designs.
+
+    </p>
+</section>
+<!-- BOXING -->
+<section class="rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8">
+<div class="h-[420px] rounded-2xl overflow-hidden bg-white mb-7 flex items-center justify-center"><img alt="LSU Boxing Club logo" class="w-full h-full object-contain object-center" decoding="async" loading="lazy" src="assets/images/image-12-a35a5130ef.png" style="display:block;"/></div>
+<p class="text-blue-400 uppercase tracking-[0.25em] text-sm font-semibold mb-2">Outside Engineering</p>
+<h3 class="text-3xl font-bold text-white mb-4">Boxing</h3>
+<p class="text-white/70 leading-relaxed max-w-4xl">
+      I have three years of boxing experience, I am using this experience to continue to improve in the sport of boxing as well as teaching others how to box. 
+      I am currently in the process of creating the Ramfight CSU boxing club, right now I have a boxing group that I teach at local parks.
+    </p>
+</section>
+</div>
+</section><!-- EXPERIENCE -->
+<section class="page fade-in" id="page-experience">
+<div class="max-w-6xl mx-auto px-6 py-16">
+<div class="mb-10">
+<p class="text-[#3b82f6] uppercase tracking-[0.25em] text-sm font-semibold mb-3">Professional Journey</p>
+<h2 class="canva-text" data-template-id="exp-heading" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 36px;">Experience</h2>
+<p class="text-white/60 mt-3 max-w-2xl">Engineering, aerospace, laboratory, and customer-facing experience across multidisciplinary teams.</p>
+</div>
+<div class="space-y-7">
+<article class="group rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-2xl hover:shadow-blue-950/20">
+<div class="flex flex-col sm:flex-row sm:items-start gap-5 mb-6">
+<div class="flex justify-center sm:justify-start shrink-0"><div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg" style="background:#06491f"><img alt="MECH UTL logo" class="w-full h-full object-contain" decoding="async" loading="lazy" src="assets/images/image-13-551329869d.png"/></div></div>
+<div class="flex flex-1 flex-wrap items-start justify-between gap-3 pt-1"><div><h3 class="text-white text-2xl font-bold">MECH UTL internship</h3><p class="text-blue-400 font-medium mt-1">Internship</p></div><div class="text-right text-white/50 text-sm"><p>May 2026 – August 2026</p></div></div>
+</div>
+<div class="rounded-xl bg-slate-900/55 p-5"><h4 class="text-white font-bold mb-3">Engineering Contributions</h4><ul class="space-y-2 text-white/65 text-sm leading-relaxed list-disc pl-5"><li>Designed mechanical engineering laboratory test equipment to support hands-on instruction and experimentation.</li><li>Created an introductory electronics video course used as a teaching resource for Mechatronics students at Colorado State University.</li><li>Redesigned laboratory spaces to improve organization, workflow, and learning efficiency.</li></ul></div></article><article class="group rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-2xl hover:shadow-blue-950/20"><div class="flex flex-col sm:flex-row sm:items-start gap-5 mb-6"><div class="flex justify-center sm:justify-start shrink-0">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white p-3 flex items-center justify-center shadow-lg">
+<img alt="Open Orbit logo" class="max-w-full max-h-full object-contain" decoding="async" loading="lazy" src="assets/images/image-14-c9c64626e2.jpg"/>
+</div>
+</div><div class="flex flex-1 flex-wrap items-start justify-between gap-3 pt-1">
+<div>
+<h3 class="text-white text-2xl font-bold">Open Orbit</h3>
+<p class="text-blue-400 font-medium mt-1">Part-time · 1 yr 9 mos · On-site</p>
+</div>
+<span class="rounded-full bg-blue-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-blue-300">Fort Collins, Colorado</span>
+</div></div>
+<div class="space-y-6">
+<div class="rounded-xl bg-slate-900/55 p-5">
+<div class="flex flex-wrap items-baseline justify-between gap-2">
+<h4 class="text-white text-lg font-bold">High Altitude Balloon Lead</h4>
+<span class="text-white/50 text-sm">Jun 2026 – Present · 3 mos</span>
+</div>
+<p class="text-white/70 leading-relaxed mt-3">Leading incoming Open Orbit CubeSat members in building more modular high-altitude balloons featuring new payload prototypes.</p>
+</div>
+<div class="rounded-xl bg-slate-900/55 p-5">
+<div class="flex flex-wrap items-baseline justify-between gap-2">
+<h4 class="text-white text-lg font-bold">Electrical Engineer</h4>
+<span class="text-white/50 text-sm">Dec 2024 – Jun 2026 · 1 yr 7 mos</span>
+</div>
+<p class="text-white/70 leading-relaxed mt-3">Completed electrical work on the demo model and contributed to high-altitude balloons, CubeSat electronics, and payload development.</p>
+</div>
+</div>
+</article>
+<article class="group rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-2xl hover:shadow-blue-950/20"><div class="flex flex-col sm:flex-row sm:items-start gap-5 mb-6"><div class="flex justify-center sm:justify-start shrink-0">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl p-3 flex items-center justify-center shadow-lg" style="background: rgb(26, 26, 26);">
+<img alt="True Anomaly logo" class="max-w-full max-h-full object-contain" decoding="async" loading="lazy" src="assets/images/image-15-1bd98561d7.jpg"/>
+</div>
+</div><div class="flex flex-1 flex-wrap items-start justify-between gap-3 pt-1">
+<div>
+<h3 class="text-white text-2xl font-bold">Aerospace Engineering Intern</h3>
+<p class="text-blue-400 font-medium mt-1">True Anomaly · Internship</p>
+</div>
+<div class="text-right text-white/50 text-sm">
+<p>Jun 2023 – Aug 2023 · 3 mos</p>
+<p class="mt-1">United States · On-site</p>
+</div>
+</div></div>
+<p class="text-white/70 leading-relaxed mt-5">Part of True Anomaly’s original four-person intern team and contributed to the creation of Jackal.</p>
+<div class="grid lg:grid-cols-2 gap-4 mt-5">
+<div class="rounded-xl bg-slate-900/55 p-5">
+<h4 class="text-white font-bold mb-3">Engineering Contributions</h4>
+<ul class="space-y-2 text-white/65 text-sm leading-relaxed list-disc pl-5">
+<li>Supported Jackal capabilities for multi-spectral imagery, full-motion video, and metric observation data.</li>
+<li>Assisted with sensor test hardware, cable testing, design reviews, and algorithm improvements for visual detection.</li>
+<li>Presented designs and incorporated feedback from preliminary design reviews.</li>
+</ul>
+</div>
+<div class="rounded-xl bg-slate-900/55 p-5">
+<h4 class="text-white font-bold mb-3">Software &amp; Professional Skills</h4>
+<ul class="space-y-2 text-white/65 text-sm leading-relaxed list-disc pl-5">
+<li>Wrote Python scripts to analyze and compare large data arrays and created physics tools.</li>
+<li>Built experience in systems engineering, deadline management, presentations, teamwork, and leadership.</li>
+</ul>
+</div>
+</div>
+</article>
+<article class="group rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-2xl hover:shadow-blue-950/20"><div class="flex flex-col sm:flex-row sm:items-start gap-5 mb-6"><div class="flex justify-center sm:justify-start shrink-0">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl p-3 flex items-center justify-center shadow-lg bg-black">
+<img alt="CSU I2P Lab logo" class="max-w-full max-h-full object-contain" decoding="async" loading="lazy" src="assets/images/image-16-5f52bfc60f.jpg"/>
+</div>
+</div><div class="flex flex-1 flex-wrap items-start justify-between gap-3 pt-1">
+<div>
+<h3 class="text-white text-2xl font-bold">Laboratory Technician</h3>
+<p class="text-blue-400 font-medium mt-1">CSU I2P Lab · Part-time</p>
+</div>
+<div class="text-right text-white/50 text-sm">
+<p>Sep 2024 – Present · 2 yrs</p>
+<p class="mt-1">Fort Collins, Colorado · On-site</p>
+</div>
+</div></div>
+<div class="rounded-xl bg-slate-900/55 p-5 mt-5"><h4 class="text-white font-bold mb-3">Additional Responsibilities</h4><ul class="space-y-2 text-white/65 text-sm leading-relaxed list-disc pl-5"><li>Trained users on FDM and photopolymerization (resin) 3D printing techniques.</li><li>Trained users on xTool CO₂ and fiber laser systems; manufactured custom PCBs using a fiber laser.</li><li>Designed and prototyped parts using Onshape and SOLIDWORKS, optimizing designs for manufacturability and successful prints.</li><li>Diagnosed and repaired 3D printers, including board-level component replacement, rewiring, assembly, and complete teardowns.</li></ul></div></article>
+<article class="group rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:p-8 transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-2xl hover:shadow-blue-950/20"><div class="flex flex-col sm:flex-row sm:items-start gap-5 mb-6"><div class="flex justify-center sm:justify-start shrink-0">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white p-3 flex items-center justify-center shadow-lg">
+<img alt="Lowe's logo" class="max-w-full max-h-full object-contain" decoding="async" loading="lazy" src="assets/images/image-17-8ef8331853.jpg"/>
+</div>
+</div><div class="flex flex-1 flex-wrap items-start justify-between gap-3 pt-1">
+<div>
+<h3 class="text-white text-2xl font-bold">Sales Associate</h3>
+<p class="text-blue-400 font-medium mt-1">Lowe's Companies, Inc. · Part-time</p>
+</div>
+<p class="text-white/50 text-sm">Jun 2025 – Sep 2025 · 4 mos</p>
+</div></div>
+</article>
+</div>
+</div>
+</section><section class="page fade-in" id="page-skills">
+<div class="max-w-6xl mx-auto px-6 py-16">
+<div class="mb-10">
+<p class="text-[#3b82f6] uppercase tracking-[0.25em] text-sm font-semibold mb-3">Engineering Toolkit</p>
+<h2 class="text-white font-bold text-4xl">Technical Skills</h2>
+<p class="text-white/60 mt-3 max-w-2xl">Programming, electronics, CAD, prototyping, fabrication, and laboratory experience developed through aerospace, rover, and makerspace projects.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-6">
+<article class="rounded-2xl border border-white/10 bg-slate-800/70 p-6">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+<i class="text-blue-400" data-lucide="code-2" style="width:22px;height:22px"></i>
+</div>
+<h3 class="text-white text-xl font-bold">Programming</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Arduino (C/C++)</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Raspberry Pi (Python)</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Python</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Basic C++</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Basic Java</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Basic JavaScript</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Data Analysis</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Windows 10</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Linux (Debian &amp; Ubuntu)</span>
+</div>
+</article>
+<article class="rounded-2xl border border-white/10 bg-slate-800/70 p-6">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+<i class="text-blue-400" data-lucide="cpu" style="width:22px;height:22px"></i>
+</div>
+<h3 class="text-white text-xl font-bold">Electronics</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">PCB Design</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Harness Design</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">EasyEDA</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">KiCad</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">PCB Fabrication</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Hand Soldering</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Reflow Soldering</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">ESD Precautions</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Electrical Harness Testing</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Cable Testing</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Circuit Design</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">CubeSat Electronics</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Payload Development</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Sensor Test Hardware</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Electronics Troubleshooting</span>
+</div>
+</article>
+<article class="rounded-2xl border border-white/10 bg-slate-800/70 p-6">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+<i class="text-blue-400" data-lucide="box" style="width:22px;height:22px"></i>
+</div>
+<h3 class="text-white text-xl font-bold">CAD &amp; Prototyping</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">SOLIDWORKS</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Onshape</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Fusion 360</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">3D Modeling</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Rapid Prototyping</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Design for Manufacturing</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Rover Parts</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Functional Components</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Prototype Development</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Design Correction for Printing</span>
+</div>
+</article>
+<article class="rounded-2xl border border-white/10 bg-slate-800/70 p-6">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+<i class="text-blue-400" data-lucide="printer" style="width:22px;height:22px"></i>
+</div>
+<h3 class="text-white text-xl font-bold">Digital Fabrication</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">FDM 3D Printing</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Resin / Photopolymerization</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Additive Manufacturing</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">CO₂ Laser Cutting</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Fiber Laser Cutting</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">xTool P2</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">xTool F2 Ultra</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Epilog Helix</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Bambu Lab P1S</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Bambu Lab X1C</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Bambu Lab H2D</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Bambu Lab A1 Mini</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Prusa XL</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Prusa MK3S</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Prusa MK4S</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Prusa Core One</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">3D Printer Repair</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Board Component Replacement</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Rewiring</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Printer Builds &amp; Teardowns</span>
+</div>
+</article>
+<article class="rounded-2xl border border-white/10 bg-slate-800/70 p-6 md:col-span-2">
+<div class="flex items-center gap-3 mb-5">
+<div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+<i class="text-blue-400" data-lucide="badge-check" style="width:22px;height:22px"></i>
+</div>
+<h3 class="text-white text-xl font-bold">Certifications &amp; Laboratory Experience</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Digital Multimeter Certification</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">3 Phase Multimeter Certification</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Cleanroom ISO Level 7</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">TestOut PC Pro — Windows &amp; Linux</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">3D Printer Trainer</span>
+<span class="rounded-full bg-slate-900/70 px-3 py-1.5 text-sm text-white/75">Laser Systems Trainer</span>
+</div>
+</article>
+</div>
+</div>
+</section><!-- SERVICES -->
+<!-- TESTIMONIALS -->
+<!-- ROVER -->
+<section class="page fade-in rover-prelogin" id="page-rover">
+<div class="max-w-6xl mx-auto px-6 py-16">
+<div class="space-y-10" id="rover-layout-shell">
+<div class="relative max-w-5xl mx-auto text-center" id="rover-hero-block">
+<p class="canva-text text-sm uppercase tracking-widest mb-4" data-template-id="rover-kicker" style="color: rgb(59, 130, 246); font-weight: 500; font-style: normal; font-size: 14px;">FIELD LAB</p>
+<h2 class="canva-text mb-4" data-template-id="rover-heading" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal;  font-size: clamp(3.25rem, 7vw, 5.5rem); line-height: 1.02; text-align: center;">Control My Rover</h2>
+<p class="canva-text leading-relaxed mb-8 max-w-3xl mx-auto" data-template-id="rover-description" style="color: rgba(255, 255, 255, 0.8); font-weight: 400; font-style: normal; font-size: 16px;">Meet Rover: a compact autonomous explorer built to navigate curious spaces, collect observations, and turn movement into discovery.</p><img alt="Rover video feed placeholder" class="canva-image w-full h-72 object-cover rounded-2xl" data-template-id="rover-main-placeholder" decoding="async" loading="lazy" src="assets/images/image-18-f5bb2deaea.gif"/>
+<div class="relative" id="rover-feed-overlay-wrap">
+<div class="hidden mt-4" id="rover-feed-under-video">
+<img alt="Live rover camera feed" class="w-full rounded-2xl bg-black" id="rover-main-live-feed" style="display:block; object-fit:cover;"/>
+</div>
+</div>
+</div>
+<div class="canva-panel rounded-2xl p-6 md:p-8 w-full" data-template-id="rover-panel" id="rover-control-panel" style="background: rgb(30, 41, 59);">
+<div id="rover-protected-controls" style="display:none;">
+<div class="grid grid-cols-1 xl:grid-cols-[minmax(360px,0.9fr)_minmax(520px,1.1fr)] gap-8 items-stretch">
+<div class="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
+<h3 class="canva-text mb-6" data-template-id="rover-controls-heading" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 26px; text-align: center;">Navigation controls</h3>
+<div class="flex flex-wrap items-center justify-center gap-3 mb-2"><button aria-label="Stop rover" class="canva-button rounded-lg px-5 py-4 font-semibold transition-opacity shrink-0 duration-150 opacity-50" data-rover-move="stop" data-template-id="rover-stop" style="background: rgb(239, 68, 68); color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;" type="button">SHIFT</button><div class="grid grid-cols-3 gap-2 w-44"><span></span><button aria-label="Move rover forward" class="canva-button rounded-lg py-4 transition-opacity duration-150 opacity-50" data-rover-move="forward" data-template-id="rover-forward" style="background: rgb(59, 130, 246); color: rgb(255, 255, 255); font-weight: 400; font-style: normal; font-size: 16px;" type="button">W</button><span></span><button aria-label="Move rover left" class="canva-button rounded-lg py-4 transition-opacity duration-150 opacity-50" data-rover-move="left" data-template-id="rover-left" style="background: rgb(59, 130, 246); color: rgb(255, 255, 255); font-weight: 400; font-style: normal; font-size: 16px;" type="button">A</button><button aria-label="Move rover backward" class="canva-button rounded-lg py-4 transition-opacity duration-150 opacity-50" data-rover-move="backward" data-template-id="rover-backward" style="background: rgb(59, 130, 246); color: rgb(255, 255, 255); font-weight: 400; font-style: normal; font-size: 16px;" type="button">S</button><button aria-label="Move rover right" class="canva-button rounded-lg py-4 transition-opacity duration-150 opacity-50" data-rover-move="right" data-template-id="rover-right" style="background: rgb(59, 130, 246); color: rgb(255, 255, 255); font-weight: 400; font-style: normal; font-size: 16px;" type="button">D</button></div></div>
+</div>
+<div class="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
+<div class="mb-8">
+<div class="flex items-center justify-between gap-4 mb-3">
+<div>
+<h4 class="text-white font-semibold text-2xl">Camera mouse control</h4>
+</div>
+<span class="shrink-0 text-xs font-semibold px-3 py-1 rounded-full bg-white/10 text-white/60" id="rover-camera-state">UNLOCKED</span>
+</div>
+<div aria-label="Rover camera servo control area" id="rover-camera-pad" role="application" tabindex="0">
+<div id="rover-camera-center-dot"></div>
+<div id="rover-camera-crosshair" style="left:50%; top:50%;"></div>
+<div class="absolute left-4 right-4 bottom-4 grid grid-cols-2 md:grid-cols-4 gap-2 pointer-events-none">
+<div class="rounded-lg bg-black/35 border border-white/10 px-3 py-2">
+<div class="text-white/45 text-[11px] uppercase tracking-wide">Pan</div>
+<div class="rover-camera-readout text-white font-semibold text-lg" id="rover-camera-pan">90°</div>
+</div>
+<div class="rounded-lg bg-black/35 border border-white/10 px-3 py-2">
+<div class="text-white/45 text-[11px] uppercase tracking-wide">Tilt</div>
+<div class="rover-camera-readout text-white font-semibold text-lg" id="rover-camera-tilt">90°</div>
+</div>
+<div class="rounded-lg bg-black/35 border border-white/10 px-3 py-2">
+<div class="text-white/45 text-[11px] uppercase tracking-wide">Δ X</div>
+<div class="rover-camera-readout text-white font-semibold text-lg" id="rover-camera-dx">0</div>
+</div>
+<div class="rounded-lg bg-black/35 border border-white/10 px-3 py-2">
+<div class="text-white/45 text-[11px] uppercase tracking-wide">Δ Y</div>
+<div class="rover-camera-readout text-white font-semibold text-lg" id="rover-camera-dy">0</div>
+</div>
+</div>
+</div>
+<div class="mt-2 flex items-stretch justify-center gap-2">
+<button class="rounded-lg bg-white/10 text-white/85 hover:bg-white/15 transition flex items-center justify-center text-center font-medium" id="rover-camera-center" type="button">
+      Center camera
+    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-xl mx-auto" id="rover-login-panel">
+<form class="space-y-4" id="rover-form">
+<label class="canva-text block" data-template-id="rover-name-label" for="rover-name" style="color: rgb(255, 255, 255); font-weight: 500; font-style: normal; font-size: 16px;">Username</label><input autocomplete="username" class="w-full bg-white/10 border border-white/30 text-white px-4 py-3 rounded-lg" id="rover-name" placeholder="Enter your username" required="" type="text"/> <label class="canva-text block" data-template-id="rover-email-label" for="rover-email" style="color: rgb(255, 255, 255); font-weight: 500; font-style: normal; font-size: 16px;">Password</label><input autocomplete="current-password" class="w-full bg-white/10 border border-white/30 text-white px-4 py-3 rounded-lg" id="rover-email" placeholder="Enter your password" required="" type="password"/> <button class="canva-button w-full py-3 rounded-lg font-semibold" data-template-id="rover-submit" style="background: rgb(59, 130, 246); color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;" type="submit">Login</button>
+</form>
+<p class="mt-3 text-center text-xs text-white/45">
+  Test login: <span class="font-mono text-white/65">rover</span> /
+  <span class="font-mono text-white/65">camera123</span>
+</p>
+<p aria-live="polite" class="hidden canva-text mt-4 text-center" data-template-id="rover-form-success" id="rover-form-success" style="color: rgba(255, 255, 255, 0.8);"></p>
+</div>
+</div>
+</div>
+</div>
+</section><!-- CONTACT -->
+<section class="page fade-in" id="page-contact">
+<div class="max-w-xl mx-auto px-6 py-16">
+<h2 class="text-white font-bold text-4xl mb-6">Contact</h2>
+<p class="text-white/70 leading-relaxed mb-8">Interested in getting in touch? You can contact me directly using the information below.</p>
+<div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+<p class="text-white/50 text-sm uppercase tracking-wider mb-2">Email</p>
+<a class="text-blue-400 hover:text-blue-300 text-lg font-medium transition-colors break-all" href="mailto:Liam.tice.jobs@gmail.com">Liam.tice.jobs@gmail.com</a>
+<p class="text-white/55 text-sm leading-relaxed mt-4">For engineering projects, internship opportunities, professional inquiries, or collaboration.</p>
+</div>
+</div>
+</section>
+</main>
+<script>
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+
+    function navigate() {
+      const hash = window.location.hash || '#home';
+      const pageId = 'page-' + hash.slice(1);
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(pageId);
+      if (target) target.classList.add('active');
+      else document.getElementById('page-home').classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === hash);
+      });
+    }
+
+    window.addEventListener('hashchange', navigate);
+    navigate();
+
+    const roverButtons = [...document.querySelectorAll('[data-rover-move]')];
+    const roverKeys = {
+      w: 'forward',
+      a: 'left',
+      s: 'backward',
+      d: 'right',
+      shift: 'stop',
+      tab: 'tab'
+    };
+
+    function setRoverMove(direction, pressed) {
+      const button = roverButtons.find(item => item.dataset.roverMove === direction);
+      if (!button) return;
+
+      // Controls are dim when idle and bright only while actively held.
+      button.classList.toggle('opacity-50', !pressed);
+      button.classList.toggle('opacity-100', pressed);
+
+      if (!status) return;
+
+      if (!pressed) {
+      } else if (direction === 'stop') {
+      } else if (direction === 'tab') {
+      } else {
+      }
+    }
+
+    roverButtons.forEach(button => {
+      const direction = button.dataset.roverMove;
+
+      button.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        button.setPointerCapture?.(event.pointerId);
+        setRoverMove(direction, true);
+      });
+
+      const releaseButton = event => {
+        if (event?.pointerId !== undefined && button.hasPointerCapture?.(event.pointerId)) {
+          button.releasePointerCapture(event.pointerId);
+        }
+        setRoverMove(direction, false);
+      };
+
+      button.addEventListener('pointerup', releaseButton);
+      button.addEventListener('pointercancel', releaseButton);
+      button.addEventListener('lostpointercapture', () => setRoverMove(direction, false));
+      button.addEventListener('pointerleave', event => {
+        if (event.buttons === 0) setRoverMove(direction, false);
+      });
+    });
+
+    function isTypingField(element) {
+      return element instanceof HTMLInputElement ||
+             element instanceof HTMLTextAreaElement ||
+             element instanceof HTMLSelectElement ||
+             element?.isContentEditable;
+    }
+
+    function roverKeyboardEnabled(event) {
+      return window.location.hash === '#rover' && !isTypingField(event.target);
+    }
+
+    window.addEventListener('keydown', event => {
+      if (!roverKeyboardEnabled(event)) return;
+
+      const direction = roverKeys[event.key.toLowerCase()];
+      if (!direction) return;
+
+      event.preventDefault();
+      if (!event.repeat) setRoverMove(direction, true);
+    });
+
+    window.addEventListener('keyup', event => {
+      if (!roverKeyboardEnabled(event)) return;
+
+      const direction = roverKeys[event.key.toLowerCase()];
+      if (!direction) return;
+
+      event.preventDefault();
+      setRoverMove(direction, false);
+    });
+
+    window.addEventListener('blur', () => {
+      roverButtons.forEach(button => setRoverMove(button.dataset.roverMove, false));
+    });
+
+
+
+    // ---------------- Rover camera control ----------------
+    // Set this to your HTTPS DigitalOcean API address after deployment.
+    // Example: https://rover-api.example.com
+    const ROVER_CAMERA_API_BASE = 'https://YOUR-DIGITALOCEAN-DOMAIN.example';
+
+    const CAMERA = {
+      panMin: 20,
+      panCenter: 90,
+      panMax: 160,
+      tiltMin: 35,
+      tiltCenter: 90,
+      tiltMax: 125,
+      sensitivity: 0.35, // servo degrees per mouse movement unit
+      sendIntervalMs: 75,
+      previewRefreshMs: 350
+    };
+
+    const roverCameraPad = document.getElementById('rover-camera-pad');
+    const roverCameraState = document.getElementById('rover-camera-state');
+const roverMainPlaceholder = document.getElementById('rover-main-placeholder');
+    const roverMainLiveFeed = document.getElementById('rover-main-live-feed');
+    const roverFeedUnderVideo = document.getElementById('rover-feed-under-video');
+    let roverLoggedIn = false;
+
+    function showRoverPlaceholder() {
+      if (roverMainPlaceholder) roverMainPlaceholder.classList.remove('hidden');
+      if (roverFeedUnderVideo) roverFeedUnderVideo.classList.add('hidden');
+    }
+
+    function showRoverLiveFeed() {
+      if (!roverLoggedIn) return;
+      if (roverMainPlaceholder) roverMainPlaceholder.classList.remove('hidden');
+      if (roverFeedUnderVideo) roverFeedUnderVideo.classList.remove('hidden');
+      syncRoverFeedSize();
+    }
+
+    function refreshRoverMainFeed() {
+      if (!roverLoggedIn || !cameraApiConfigured || !roverMainLiveFeed) return;
+      roverMainLiveFeed.src =
+        `${ROVER_CAMERA_API_BASE}/api/camera/frame/latest?t=${Date.now()}`;
+    }
+
+    function startRoverMainFeed() {
+      if (!cameraApiConfigured) {
+        showRoverPlaceholder();
+        return;
+      }
+      refreshRoverMainFeed();
+
+      if (!window.__roverMainFeedTimer) {
+        window.__roverMainFeedTimer =
+          setInterval(refreshRoverMainFeed, CAMERA.previewRefreshMs);
+      }
+    }
+
+    const roverCameraCrosshair = document.getElementById('rover-camera-crosshair');
+    const roverCameraPan = document.getElementById('rover-camera-pan');
+    const roverCameraTilt = document.getElementById('rover-camera-tilt');
+    const roverCameraDx = document.getElementById('rover-camera-dx');
+    const roverCameraDy = document.getElementById('rover-camera-dy');
+    const roverCameraCenterButton = document.getElementById('rover-camera-center');
+let cameraPan = CAMERA.panCenter;
+    let cameraTilt = CAMERA.tiltCenter;
+    let lastCameraSend = 0;
+
+    const cameraApiConfigured = !ROVER_CAMERA_API_BASE.includes('YOUR-DIGITALOCEAN-DOMAIN');
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+      return outMin + ((value - inMin) / (inMax - inMin)) * (outMax - outMin);
+    }
+
+
+    function syncRoverFeedSize() {
+      if (!roverMainPlaceholder || !roverMainLiveFeed || !roverFeedUnderVideo) return;
+      const rect = roverMainPlaceholder.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        roverFeedUnderVideo.style.width = `${rect.width}px`;
+        roverMainLiveFeed.style.width = `${rect.width}px`;
+        roverMainLiveFeed.style.height = `${rect.height}px`;
+      }
+    }
+
+    window.addEventListener('resize', syncRoverFeedSize);
+
+    function updateCameraUi(dx = 0, dy = 0) {
+      roverCameraPan.textContent = `${Math.round(cameraPan)}°`;
+      roverCameraTilt.textContent = `${Math.round(cameraTilt)}°`;
+      roverCameraDx.textContent = dx;
+      roverCameraDy.textContent = dy;
+
+      // The virtual cursor reaches the pad edge at the exact configured servo limits.
+      // Map each side of the servo range separately so the configured
+      // center angle always lands exactly on the visual center dot (50%).
+      const xPercent = cameraPan <= CAMERA.panCenter
+        ? mapRange(cameraPan, CAMERA.panMin, CAMERA.panCenter, 3, 50)
+        : mapRange(cameraPan, CAMERA.panCenter, CAMERA.panMax, 50, 97);
+
+      const yPercent = cameraTilt <= CAMERA.tiltCenter
+        ? mapRange(cameraTilt, CAMERA.tiltMin, CAMERA.tiltCenter, 3, 50)
+        : mapRange(cameraTilt, CAMERA.tiltCenter, CAMERA.tiltMax, 50, 97);
+
+      roverCameraCrosshair.style.left = `${xPercent}%`;
+      roverCameraCrosshair.style.top = `${yPercent}%`;
+    }
+
+    async function sendCameraTarget(force = false) {
+      if (!cameraApiConfigured) return;
+
+      const now = performance.now();
+      if (!force && now - lastCameraSend < CAMERA.sendIntervalMs) return;
+      lastCameraSend = now;
+
+      try {
+        const response = await fetch(`${ROVER_CAMERA_API_BASE}/api/camera/command`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pan: Number(cameraPan.toFixed(2)),
+            tilt: Number(cameraTilt.toFixed(2))
+          })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        roverCameraApiState.textContent = 'Camera API connected';
+        roverCameraApiState.className = 'rounded-lg py-2 px-3 bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 text-sm text-center';
+      } catch (error) {
+        roverCameraApiState.textContent = 'Camera API offline';
+        roverCameraApiState.className = 'rounded-lg py-2 px-3 bg-red-500/10 border border-red-400/20 text-red-300 text-sm text-center';
+      }
+    }
+
+    function centerCamera() {
+      cameraPan = CAMERA.panCenter;
+      cameraTilt = CAMERA.tiltCenter;
+      updateCameraUi(0, 0);
+      sendCameraTarget(true);
+    }
+
+    if (roverMainLiveFeed) {
+      roverMainLiveFeed.addEventListener('load', () => {
+        showRoverLiveFeed();
+        if (roverCameraApiState) {
+          roverCameraApiState.textContent = 'Live camera feed';
+          roverCameraApiState.className =
+            'rounded-lg py-2 px-3 bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 text-sm text-center';
+        }
+      });
+
+      roverMainLiveFeed.addEventListener('error', () => {
+        showRoverPlaceholder();
+        if (roverLoggedIn && roverCameraApiState) {
+          roverCameraApiState.textContent = 'Waiting for rover camera';
+          roverCameraApiState.className =
+            'rounded-lg py-2 px-3 bg-white/5 border border-white/10 text-white/50 text-sm text-center';
+        }
+      });
+    }
+
+    showRoverPlaceholder();
+
+    if (roverCameraCenterButton) {
+      roverCameraCenterButton.addEventListener('click', centerCamera);
+    }
+
+    if (roverCameraPad) {
+      roverCameraPad.addEventListener('click', () => {
+        if (document.pointerLockElement !== roverCameraPad) {
+          roverCameraPad.requestPointerLock();
+        }
+      });
+
+      document.addEventListener('pointerlockchange', () => {
+        const locked = document.pointerLockElement === roverCameraPad;
+        roverCameraPad.classList.toggle('camera-locked', locked);
+
+        roverCameraState.textContent = locked ? 'LOCKED' : 'UNLOCKED';
+        roverCameraState.classList.toggle('bg-blue-500/20', locked);
+        roverCameraState.classList.toggle('text-blue-300', locked);
+        roverCameraState.classList.toggle('bg-white/10', !locked);
+        roverCameraState.classList.toggle('text-white/60', !locked);
+
+        if (!locked) updateCameraUi(0, 0);
+      });
+
+      document.addEventListener('mousemove', (event) => {
+        if (document.pointerLockElement !== roverCameraPad) return;
+
+        const dx = event.movementX || 0;
+        const dy = event.movementY || 0;
+
+        cameraPan = clamp(
+          cameraPan + dx * CAMERA.sensitivity,
+          CAMERA.panMin,
+          CAMERA.panMax
+        );
+
+        cameraTilt = clamp(
+          cameraTilt + dy * CAMERA.sensitivity,
+          CAMERA.tiltMin,
+          CAMERA.tiltMax
+        );
+
+        updateCameraUi(dx, dy);
+        sendCameraTarget(false);
+      });
+    }
+
+    updateCameraUi();
+    // ------------------------------------------------------
+
+    // Canva's data SDK is optional in the standalone/downloaded version.
+    // Do not let a missing SDK prevent the rover login controls from initializing.
+    if (window.dataSdk && typeof window.dataSdk.init === 'function') {
+      window.dataSdk.init({ onDataChanged() {} });
+    }
+
+    function unlockRoverControls() {
+      const controls = document.getElementById('rover-protected-controls');
+      const loginPanel = document.getElementById('rover-login-panel');
+
+      if (controls) {
+        controls.style.display = 'block';
+        controls.removeAttribute('hidden');
+      }
+
+      if (loginPanel) {
+        loginPanel.style.display = 'none';
+      }
+
+      const roverPage = document.getElementById('page-rover');
+      if (roverPage) {
+        roverPage.classList.remove('rover-prelogin');
+        roverPage.classList.add('rover-postlogin');
+      }
+
+      roverLoggedIn = true;
+
+      // Move the controls into the relative live-feed wrapper after login so
+      // their absolute bottom positioning is anchored to the camera footage.
+      const roverFeedOverlay = document.getElementById('rover-feed-overlay-wrap');
+      const roverControlPanel = document.getElementById('rover-control-panel');
+      if (roverFeedOverlay && roverControlPanel && roverControlPanel.parentElement !== roverFeedOverlay) {
+        roverFeedOverlay.appendChild(roverControlPanel);
+      }
+
+      startRoverMainFeed();
+      syncRoverFeedSize();
+
+      // Center the combined rover video + controls block in the viewport.
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const roverView = document.getElementById('rover-postlogin-view');
+          const roverControls = document.getElementById('rover-control-panel');
+          const roverFeed = document.getElementById('rover-main-placeholder');
+
+          if (roverView && roverControls && roverFeed) {
+            const feedRect = roverFeed.getBoundingClientRect();
+            const controlsRect = roverControls.getBoundingClientRect();
+
+            const combinedTop = window.scrollY + feedRect.top;
+            const combinedBottom = window.scrollY + controlsRect.bottom;
+            const combinedHeight = combinedBottom - combinedTop;
+
+            // Center the whole feed+controls block in the viewport.
+            const target =
+              combinedTop - Math.max(0, (window.innerHeight - combinedHeight) / 2);
+
+            window.scrollTo({
+              top: Math.max(0, target),
+              behavior: 'smooth'
+            });
+          }
+        }, 180);
+      });
+    }
+
+    const TEST_ROVER_USERNAME = 'rover';
+    const TEST_ROVER_PASSWORD = 'camera123';
+
+    function bindRoverLoginForm(formId, usernameId, passwordId, successId) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById(usernameId).value.trim();
+        const password = document.getElementById(passwordId).value;
+        const success = document.getElementById(successId);
+
+        if (formId === 'rover-form') {
+          if (username === TEST_ROVER_USERNAME && password === TEST_ROVER_PASSWORD) {
+            success.textContent = 'Login successful.';
+            success.classList.remove('hidden');
+            e.target.reset();
+            unlockRoverControls();
+          } else {
+            success.textContent = 'Invalid username or password.';
+            success.classList.remove('hidden');
+          }
+          return;
+        }
+
+        const result = await window.dataSdk.create({ name: username, email: password });
+        success.textContent = result.isOk ? 'Thanks — your rover request was received.' : 'Something went wrong. Please try again.';
+        success.classList.remove('hidden');
+        if (result.isOk) e.target.reset();
+      });
+    }
+
+    bindRoverLoginForm('rover-form', 'rover-name', 'rover-email', 'rover-form-success');
+    // Keyboard visual feedback for rover movement controls.
+    const roverKeyMap = {
+      'w': 'rover-forward',
+      'a': 'rover-left',
+      's': 'rover-backward',
+      'd': 'rover-right',
+      'shift': 'rover-stop'
+    };
+
+    function setRoverKeyVisual(key, active) {
+      const templateId = roverKeyMap[key.toLowerCase()];
+      if (!templateId) return;
+
+      const button = document.querySelector(`[data-template-id="${templateId}"]`);
+      if (!button) return;
+
+      button.classList.toggle('key-active', active);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (roverKeyMap[key]) {
+        setRoverKeyVisual(key, true);
+      }
+    });
+
+    document.addEventListener('keyup', (event) => {
+      const key = event.key.toLowerCase();
+      if (roverKeyMap[key]) {
+        setRoverKeyVisual(key, false);
+      }
+    });
+
+    window.addEventListener('blur', () => {
+      Object.keys(roverKeyMap).forEach((key) => setRoverKeyVisual(key, false));
+    });
+
+</script>
+</body></html>
