@@ -34,6 +34,10 @@
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
+    #rover-main-live-feed {
+    transform: rotate(180deg);
+    }
+
     #rover-camera-pad:hover { border-color: rgba(96, 165, 250, 0.8); }
 
     #rover-camera-pad.camera-locked {
@@ -2050,7 +2054,7 @@ let cameraPan = CAMERA.panCenter;
         const response = await fetch(`${ROVER_CAMERA_API_BASE}/control`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: roverAuthHeader },
-          body: JSON.stringify({ x_angle: -Number(cameraPan.toFixed(2)), y_angle: -Number(cameraTilt.toFixed(2)) })
+          body: JSON.stringify({ x_angle: -Number(cameraPan.toFixed(2)), y_angle: Number(cameraTilt.toFixed(2)) })
         });
         if (response.status === 401) { roverSessionExpired(); return; }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
