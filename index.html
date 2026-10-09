@@ -1918,18 +1918,26 @@ Professional leadership Experience</p>
     // ---------------- Rover camera control ----------------
     // Set this to your HTTPS DigitalOcean API address after deployment.
     // Example: https://rover-api.example.com
-    const ROVER_CAMERA_API_BASE = 'https://YOUR-DIGITALOCEAN-DOMAIN.example';
+    const ROVER_CAMERA_API_BASE = 'https://api.liamticerobotics.com';
+    let roverAuthHeader = null;
+    let roverFeedBusy = false;
+    let roverFrameUrl = null;
+    let roverDriveTimer = null;
+    let roverDriveDirection = 'stop';
+    let roverDriveShift = false;
+    let roverDriveBusy = false;
+    let roverCameraBusy = false;
 
     const CAMERA = {
-      panMin: 20,
-      panCenter: 90,
-      panMax: 160,
-      tiltMin: 35,
-      tiltCenter: 90,
-      tiltMax: 125,
+      panMin: -70,
+      panCenter: 0,
+      panMax: 70,
+      tiltMin: -55,
+      tiltCenter: 0,
+      tiltMax: 55,
       sensitivity: 0.35, // servo degrees per mouse movement unit
       sendIntervalMs: 75,
-      previewRefreshMs: 350
+      previewRefreshMs: 500
     };
 
     const roverCameraPad = document.getElementById('rover-camera-pad');
@@ -1951,22 +1959,30 @@ const roverMainPlaceholder = document.getElementById('rover-main-placeholder');
       syncRoverFeedSize();
     }
 
-    function refreshRoverMainFeed() {
-      if (!roverLoggedIn || !cameraApiConfigured || !roverMainLiveFeed) return;
-      roverMainLiveFeed.src =
-        `${ROVER_CAMERA_API_BASE}/api/camera/frame/latest?t=${Date.now()}`;
+    async function refreshRoverMainFeed() {
+      if (!roverLoggedIn || !roverAuthHeader || !roverMainLiveFeed || roverFeedBusy || document.hidden) return;
+      roverFeedBusy = true;
+      try {
+        const response = await fetch(`${ROVER_CAMERA_API_BASE}/portfolio/frame`, {
+          headers: { Authorization: roverAuthHeader }, cache: 'no-store'
+        });
+        if (response.status === 401) { roverSessionExpired(); return; }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+        const nextUrl = URL.createObjectURL(blob);
+        const previous = roverFrameUrl;
+        roverFrameUrl = nextUrl;
+        roverMainLiveFeed.src = nextUrl;
+        if (previous) setTimeout(() => URL.revokeObjectURL(previous), 1500);
+      } catch (error) {
+        if (roverCameraApiState) roverCameraApiState.textContent = 'Camera temporarily unavailable';
+      } finally { roverFeedBusy = false; }
     }
 
     function startRoverMainFeed() {
-      if (!cameraApiConfigured) {
-        showRoverPlaceholder();
-        return;
-      }
       refreshRoverMainFeed();
-
       if (!window.__roverMainFeedTimer) {
-        window.__roverMainFeedTimer =
-          setInterval(refreshRoverMainFeed, CAMERA.previewRefreshMs);
+        window.__roverMainFeedTimer = setInterval(refreshRoverMainFeed, CAMERA.previewRefreshMs);
       }
     }
 
@@ -2025,29 +2041,25 @@ let cameraPan = CAMERA.panCenter;
     }
 
     async function sendCameraTarget(force = false) {
-      if (!cameraApiConfigured) return;
-
+      if (!roverLoggedIn || !roverAuthHeader || roverCameraBusy) return;
       const now = performance.now();
       if (!force && now - lastCameraSend < CAMERA.sendIntervalMs) return;
       lastCameraSend = now;
-
+      roverCameraBusy = true;
       try {
-        const response = await fetch(`${ROVER_CAMERA_API_BASE}/api/camera/command`, {
+        const response = await fetch(`${ROVER_CAMERA_API_BASE}/control`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pan: Number(cameraPan.toFixed(2)),
-            tilt: Number(cameraTilt.toFixed(2))
-          })
+          headers: { 'Content-Type': 'application/json', Authorization: roverAuthHeader },
+          body: JSON.stringify({ x_angle: Number(cameraPan.toFixed(2)), y_angle: Number(cameraTilt.toFixed(2)) })
         });
-
+        if (response.status === 401) { roverSessionExpired(); return; }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         roverCameraApiState.textContent = 'Camera API connected';
         roverCameraApiState.className = 'rounded-lg py-2 px-3 bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 text-sm text-center';
       } catch (error) {
         roverCameraApiState.textContent = 'Camera API offline';
         roverCameraApiState.className = 'rounded-lg py-2 px-3 bg-red-500/10 border border-red-400/20 text-red-300 text-sm text-center';
-      }
+      } finally { roverCameraBusy = false; }
     }
 
     function centerCamera() {
@@ -2195,40 +2207,101 @@ let cameraPan = CAMERA.panCenter;
       });
     }
 
-    const TEST_ROVER_USERNAME = 'rover';
-    const TEST_ROVER_PASSWORD = 'camera123';
-
-    function bindRoverLoginForm(formId, usernameId, passwordId, successId) {
-      const form = document.getElementById(formId);
-      if (!form) return;
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById(usernameId).value.trim();
-        const password = document.getElementById(passwordId).value;
-        const success = document.getElementById(successId);
-
-        if (formId === 'rover-form') {
-          if (username === TEST_ROVER_USERNAME && password === TEST_ROVER_PASSWORD) {
-            success.textContent = 'Login successful.';
-            success.classList.remove('hidden');
-            e.target.reset();
-            unlockRoverControls();
-          } else {
-            success.textContent = 'Invalid username or password.';
-            success.classList.remove('hidden');
-          }
-          return;
-        }
-
-        const result = await window.dataSdk.create({ name: username, email: password });
-        success.textContent = result.isOk ? 'Thanks — your rover request was received.' : 'Something went wrong. Please try again.';
-        success.classList.remove('hidden');
-        if (result.isOk) e.target.reset();
-      });
+    function roverSessionExpired() {
+      roverAuthHeader = null;
+      roverLoggedIn = false;
+      roverDriveDirection = 'stop';
+      roverDriveShift = false;
+      if (roverDriveTimer) { clearInterval(roverDriveTimer); roverDriveTimer = null; }
+      if (window.__roverMainFeedTimer) { clearInterval(window.__roverMainFeedTimer); window.__roverMainFeedTimer = null; }
+      const controls = document.getElementById('rover-protected-controls');
+      const login = document.getElementById('rover-login-panel');
+      const page = document.getElementById('page-rover');
+      if (controls) controls.style.display = 'none';
+      if (login) login.style.display = 'block';
+      if (page) { page.classList.remove('rover-postlogin'); page.classList.add('rover-prelogin'); }
+      // Return the login card to its original column if it was moved over the feed.
+      const panel = document.getElementById('rover-control-panel');
+      const shell = document.getElementById('rover-layout-shell');
+      if (panel && shell && panel.parentElement !== shell) shell.appendChild(panel);
+      showRoverPlaceholder();
+      const message = document.getElementById('rover-form-success');
+      if (message) { message.textContent = 'Session expired. Sign in with the latest emailed password.'; message.classList.remove('hidden'); }
     }
 
-    bindRoverLoginForm('rover-form', 'rover-name', 'rover-email', 'rover-form-success');
+    async function roverDriveSend() {
+      if (!roverLoggedIn || !roverAuthHeader || roverDriveBusy) return;
+      roverDriveBusy = true;
+      try {
+        const response = await fetch(`${ROVER_CAMERA_API_BASE}/drive`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: roverAuthHeader },
+          body: JSON.stringify({drive: roverDriveDirection, shift: roverDriveShift}),
+          cache: 'no-store'
+        });
+        if (response.status === 401) roverSessionExpired();
+        else if (!response.ok) console.warn('Rover drive:', response.status);
+      } catch (error) { console.warn('Rover drive unavailable:', error); }
+      finally { roverDriveBusy = false; }
+    }
+
+    function roverStop() {
+      roverDriveDirection = 'stop';
+      roverDriveShift = false;
+      roverDriveSend();
+    }
+
+    function roverSetDrive(direction, pressed) {
+      if (!roverLoggedIn) return;
+      if (direction === 'stop') {
+        roverDriveShift = !!pressed;
+        roverDriveDirection = 'stop';
+      } else if (pressed) {
+        roverDriveDirection = direction;
+      } else if (roverDriveDirection === direction) {
+        roverDriveDirection = 'stop';
+      }
+      roverDriveSend();
+    }
+
+    // Bind the existing keyboard and mouse controls to the real drive endpoint.
+    const oldSetRoverMove = setRoverMove;
+    setRoverMove = function(direction, pressed) {
+      oldSetRoverMove(direction, pressed);
+      roverSetDrive(direction, pressed);
+    };
+
+    window.addEventListener('blur', roverStop);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) roverStop(); });
+    window.addEventListener('hashchange', () => { if (window.location.hash !== '#rover') roverStop(); });
+
+    const roverForm = document.getElementById('rover-form');
+    if (roverForm) roverForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const username = document.getElementById('rover-name').value.trim();
+      const password = document.getElementById('rover-email').value;
+      const message = document.getElementById('rover-form-success');
+      const submit = roverForm.querySelector('[type=submit]');
+      if (submit) submit.disabled = true;
+      try {
+        const authorization = 'Basic ' + btoa(String.fromCharCode(...new TextEncoder().encode(username + ':' + password)));
+        const response = await fetch(`${ROVER_CAMERA_API_BASE}/portfolio/auth`, {
+          headers: { Authorization: authorization }, cache: 'no-store'
+        });
+        if (!response.ok) throw new Error(response.status === 401 ? 'Invalid username or password.' : `Server returned HTTP ${response.status}`);
+        roverAuthHeader = authorization;
+        message.textContent = 'Login successful.';
+        message.classList.remove('hidden');
+        roverForm.reset();
+        unlockRoverControls();
+        roverDriveTimer = setInterval(roverDriveSend, 150);
+        roverStop();
+      } catch (error) {
+        message.textContent = error.message === 'Failed to fetch' ? 'Cannot reach rover API. Check server CORS configuration.' : error.message;
+        message.classList.remove('hidden');
+      } finally { if (submit) submit.disabled = false; }
+    });
+
     // Keyboard visual feedback for rover movement controls.
     const roverKeyMap = {
       'w': 'rover-forward',
