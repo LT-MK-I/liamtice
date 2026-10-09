@@ -2054,7 +2054,7 @@ let cameraPan = CAMERA.panCenter;
         const response = await fetch(`${ROVER_CAMERA_API_BASE}/control`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: roverAuthHeader },
-          body: JSON.stringify({ x_angle: -Number(cameraPan.toFixed(2)), y_angle: Number(cameraTilt.toFixed(2)) })
+          body: JSON.stringify({ x_angle: Number(cameraPan.toFixed(2)), y_angle: Number(cameraTilt.toFixed(2)) })
         });
         if (response.status === 401) { roverSessionExpired(); return; }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2126,13 +2126,13 @@ let cameraPan = CAMERA.panCenter;
         const dy = event.movementY || 0;
 
         cameraPan = clamp(
-          cameraPan + dx * CAMERA.sensitivity,
+          cameraPan - dx * CAMERA.sensitivity,
           CAMERA.panMin,
           CAMERA.panMax
         );
 
         cameraTilt = clamp(
-          cameraTilt + dy * CAMERA.sensitivity,
+          cameraTilt - dy * CAMERA.sensitivity,
           CAMERA.tiltMin,
           CAMERA.tiltMax
         );
