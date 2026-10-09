@@ -2054,7 +2054,7 @@ let cameraPan = CAMERA.panCenter;
         const response = await fetch(`${ROVER_CAMERA_API_BASE}/control`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: roverAuthHeader },
-          body: JSON.stringify({ x_angle: Number(cameraPan.toFixed(2)), y_angle: Number(cameraTilt.toFixed(2)) })
+          body: JSON.stringify({ x_angle: -Number(cameraPan.toFixed(2)), y_angle: -Number(cameraTilt.toFixed(2)) })
         });
         if (response.status === 401) { roverSessionExpired(); return; }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2126,7 +2126,7 @@ let cameraPan = CAMERA.panCenter;
         const dy = event.movementY || 0;
 
         cameraPan = clamp(
-          cameraPan - dx * CAMERA.sensitivity,
+          cameraPan + dx * CAMERA.sensitivity,
           CAMERA.panMin,
           CAMERA.panMax
         );
@@ -2298,7 +2298,7 @@ let cameraPan = CAMERA.panCenter;
         message.classList.remove('hidden');
         roverForm.reset();
         unlockRoverControls();
-        roverDriveTimer = setInterval(roverDriveSend, 100);
+        roverDriveTimer = setInterval(roverDriveSend, 50);
         roverStop();
       } catch (error) {
         message.textContent = error.message === 'Failed to fetch' ? 'Cannot reach rover API. Check server CORS configuration.' : error.message;
