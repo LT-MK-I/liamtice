@@ -2298,7 +2298,7 @@ let cameraPan = CAMERA.panCenter;
         message.classList.remove('hidden');
         roverForm.reset();
         unlockRoverControls();
-        roverDriveTimer = setInterval(roverDriveSend, 50);
+        roverDriveTimer = setInterval(roverDriveSend, 100);
         roverStop();
       } catch (error) {
         message.textContent = error.message === 'Failed to fetch' ? 'Cannot reach rover API. Check server CORS configuration.' : error.message;
